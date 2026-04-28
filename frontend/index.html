@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Proyecto 2 - Sistema de Inventario y Ventas</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-icon">DB</div>
+        <div>
+          <strong>Proyecto 2</strong>
+          <span>Bases de Datos 1</span>
+        </div>
+      </div>
+
+      <nav class="side-nav">
+        <a href="#">Inicio</a>
+        <a href="#estado">Estado</a>
+        <a href="#inventario">Inventario</a>
+        <a href="#ventas">Ventas</a>
+        <a href="#reportes">Reportes SQL</a>
+      </nav>
+
+      <div class="sidebar-note">
+        <span>Docker activo</span>
+        <p>Frontend, backend y PostgreSQL integrados con SQL explícito.</p>
+      </div>
+    </aside>
+
+    <div class="content">
+      <header class="hero">
+        <div>
+          <p class="eyebrow">CC3088 · Proyecto 2</p>
+          <h1>Sistema de Inventario y Ventas</h1>
+          <p>
+            Plataforma web para administrar productos, categorías, ventas y reportes de una tienda.
+            Implementa frontend, backend, PostgreSQL, consultas SQL explícitas y despliegue con Docker.
+          </p>
+        </div>
+
+        <a class="button secondary" href="http://localhost:3000/api/reports/export.csv">
+          Exportar reporte CSV
+        </a>
+      </header>
+
+      <main>
+        <section class="summary-grid">
+          <article class="summary-card">
+            <span>01</span>
+            <h3>Base de datos</h3>
+            <p>Tablas relacionales, llaves primarias, llaves foráneas, índices y vista SQL.</p>
+          </article>
+
+          <article class="summary-card">
+            <span>02</span>
+            <h3>Inventario</h3>
+            <p>CRUD completo para categorías y productos con validaciones desde la interfaz.</p>
+          </article>
+
+          <article class="summary-card">
+            <span>03</span>
+            <h3>Ventas</h3>
+            <p>Registro transaccional de ventas y actualización automática de stock.</p>
+          </article>
+
+          <article class="summary-card">
+            <span>04</span>
+            <h3>Reportes SQL</h3>
+            <p>Consultas visibles usando JOIN, subqueries, GROUP BY, HAVING, CTE y VIEW.</p>
+          </article>
+        </section>
+
+        <section id="estado" class="card status-card">
+          <div class="section-title">
+            <div>
+              <p class="section-kicker">Verificación</p>
+              <h2>Estado del sistema</h2>
+            </div>
+            <span class="badge success-badge">Backend + Base de datos</span>
+          </div>
+
+          <p id="health">Verificando conexión...</p>
+        </section>
+
+        <section id="inventario" class="grid two">
+          <div class="card">
+            <div class="section-title">
+              <div>
+                <p class="section-kicker">Administración</p>
+                <h2>CRUD Categorías</h2>
+              </div>
+              <span class="badge">Entidad 1</span>
+            </div>
+
+            <form id="categoryForm">
+              <input type="hidden" id="categoryId" />
+
+              <label>
+                Nombre
+                <input id="categoryName" placeholder="Ej. Bebidas" required />
+              </label>
+
+              <label>
+                Descripción
+                <input id="categoryDescription" placeholder="Ej. Productos líquidos para consumo diario" required />
+              </label>
+
+              <div class="form-actions">
+                <button class="button" type="submit">Guardar categoría</button>
+                <button class="button ghost" type="button" id="clearCategory">Limpiar</button>
+              </div>
+            </form>
+
+            <div class="table-wrapper compact-table">
+              <table id="categoriesTable"></table>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="section-title">
+              <div>
+                <p class="section-kicker">Administración</p>
+                <h2>CRUD Productos</h2>
+              </div>
+              <span class="badge">Entidad 2</span>
+            </div>
+
+            <form id="productForm">
+              <input type="hidden" id="productId" />
+
+              <label>
+                Nombre
+                <input id="productName" placeholder="Ej. Agua pura 1L" required />
+              </label>
+
+              <div class="form-grid">
+                <label>
+                  Precio
+                  <input id="productPrice" type="number" min="0.01" step="0.01" placeholder="0.00" required />
+                </label>
+
+                <label>
+                  Stock
+                  <input id="productStock" type="number" min="0" placeholder="0" required />
+                </label>
+              </div>
+
+              <div class="form-grid">
+                <label>
+                  Categoría
+                  <select id="productCategory" required></select>
+                </label>
+
+                <label>
+                  Proveedor
+                  <select id="productSupplier" required></select>
+                </label>
+              </div>
+
+              <div class="form-actions">
+                <button class="button" type="submit">Guardar producto</button>
+                <button class="button ghost" type="button" id="clearProduct">Limpiar</button>
+              </div>
+            </form>
+
+            <div class="table-wrapper compact-table">
+              <table id="productsTable"></table>
+            </div>
+          </div>
+        </section>
+
+        <section id="ventas" class="card">
+          <div class="section-title">
+            <div>
+              <p class="section-kicker">Operación de tienda</p>
+              <h2>Registrar venta con transacción explícita</h2>
+            </div>
+            <span class="badge">BEGIN · COMMIT · ROLLBACK</span>
+          </div>
+
+          <p class="hint">
+            El backend ejecuta una transacción explícita. Si la venta se completa, confirma los cambios;
+            si no hay stock suficiente o ocurre un error, cancela la operación con ROLLBACK.
+          </p>
+
+          <form id="saleForm" class="sale-form">
+            <label>
+              Cliente
+              <select id="saleCustomer" required></select>
+            </label>
+
+            <label>
+              Empleado
+              <select id="saleEmployee" required></select>
+            </label>
+
+            <label>
+              Producto
+              <select id="saleProduct" required></select>
+            </label>
+
+            <label>
+              Cantidad
+              <input id="saleQuantity" type="number" min="1" value="1" required />
+            </label>
+
+            <button class="button" type="submit">Registrar venta</button>
+          </form>
+
+          <p id="saleMessage"></p>
+        </section>
+
+        <section id="reportes" class="card">
+          <div class="section-title">
+            <div>
+              <p class="section-kicker">Evidencia SQL</p>
+              <h2>Reportes SQL visibles en la interfaz</h2>
+            </div>
+            <span class="badge">Consultas explícitas</span>
+          </div>
+
+          <p class="hint">
+            Cada botón ejecuta una consulta SQL desde el backend y muestra el resultado directamente en la interfaz.
+          </p>
+
+          <div class="report-buttons">
+            <button class="button dark" data-report="sales-by-category">GROUP BY + HAVING</button>
+            <button class="button dark" data-report="top-customers">Subquery IN</button>
+            <button class="button dark" data-report="provider-products">Subquery EXISTS</button>
+            <button class="button dark" data-report="stock-cte">CTE WITH</button>
+            <button class="button dark" data-report="view-sales">VIEW</button>
+          </div>
+
+          <div class="table-wrapper report-table">
+            <table id="reportTable"></table>
+          </div>
+        </section>
+      </main>
+
+      <footer>
+        <p>Proyecto 2 - Sistema de tienda. Desarrollado para evaluación académica.</p>
+      </footer>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
