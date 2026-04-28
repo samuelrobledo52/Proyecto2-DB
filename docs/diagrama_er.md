@@ -1,6 +1,6 @@
 # Diagrama ER
 
-Este diagrama puede pegarse en GitHub, Mermaid Live Editor o en una herramienta compatible con Mermaid.
+Este diagrama representa las entidades principales del sistema, sus atributos, llaves primarias, llaves foráneas y relaciones necesarias para gestionar inventario, proveedores, clientes, empleados y ventas.
 
 ```mermaid
 erDiagram
