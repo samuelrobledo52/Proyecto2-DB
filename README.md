@@ -31,7 +31,7 @@ La aplicación fue desarrollada con una arquitectura separada en frontend, backe
 
 ## Estructura del proyecto
 
-```text
+
 tienda-proyecto2/
 ├── backend/
 │   ├── src/
