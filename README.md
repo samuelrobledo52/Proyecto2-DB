@@ -31,7 +31,7 @@ La aplicación fue desarrollada con una arquitectura separada en frontend, backe
 
 ## Estructura del proyecto
 
-
+```text
 tienda-proyecto2/
 ├── backend/
 │   ├── src/
@@ -57,6 +57,8 @@ tienda-proyecto2/
 ├── .env.example
 ├── docker-compose.yml
 └── README.md
+```
+
 Requisitos previos
 
 Para ejecutar el proyecto se necesita tener instalado:
