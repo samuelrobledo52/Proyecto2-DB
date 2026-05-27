@@ -44,6 +44,45 @@ body {
     linear-gradient(180deg, #eef3fb 0%, #f8fafc 100%);
 }
 
+[hidden] {
+  display: none !important;
+}
+
+.login-view {
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+  padding: 24px;
+}
+
+.login-card {
+  width: min(440px, 100%);
+  margin: 0;
+  padding: 28px;
+  border: 1px solid rgba(216, 224, 236, 0.95);
+  border-radius: 18px;
+  background: white;
+  box-shadow: var(--shadow);
+}
+
+.login-card h1 {
+  margin: 0 0 10px;
+  font-size: 32px;
+  letter-spacing: -0.8px;
+}
+
+.login-card p {
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.error-text {
+  min-height: 22px;
+  margin: 0;
+  color: var(--danger) !important;
+  font-weight: 800;
+}
+
 /* Layout principal */
 
 .app-shell {
@@ -224,6 +263,19 @@ footer {
 .hero > * {
   position: relative;
   z-index: 1;
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.hero-actions .button.ghost {
+  color: white;
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.24);
 }
 
 .eyebrow {
