@@ -1,8 +1,13 @@
 const API = 'http://localhost:3000/api';
 
+let currentUser = null;
+
+const hasPermission = (permission) => currentUser?.permissions?.includes(permission);
+
 const request = async (path, options = {}) => {
   const response = await fetch(`${API}${path}`, {
-    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json', ...(options.headers || {}) },
     ...options,
   });
   const data = await response.json().catch(() => ({}));
@@ -16,7 +21,7 @@ const renderTable = (elementId, rows, actions = null) => {
     table.innerHTML = '<tr><td>No hay datos disponibles</td></tr>';
     return;
   }
-  const headers = Object.keys(rows[0]);
+  const headers = Object.keys(rows[0]).filter(h => !['categoria', 'proveedor'].includes(h) || typeof rows[0][h] !== 'object');
   table.innerHTML = `
     <thead><tr>${headers.map(h => `<th>${h}</th>`).join('')}${actions ? '<th>Acciones</th>' : ''}</tr></thead>
     <tbody>
@@ -30,10 +35,20 @@ const renderTable = (elementId, rows, actions = null) => {
   `;
 };
 
+const applyRoleUi = () => {
+  document.querySelectorAll('[data-permission]').forEach((element) => {
+    const allowed = hasPermission(element.dataset.permission);
+    element.hidden = !allowed;
+  });
+  document.getElementById('activeUser').textContent = currentUser
+    ? `${currentUser.nombre} (${currentUser.rol})`
+    : 'Sin sesion';
+};
+
 const loadHealth = async () => {
   try {
     const data = await request('/health');
-    document.getElementById('health').textContent = `Conexión activa con backend y base de datos. Hora DB: ${new Date(data.databaseTime).toLocaleString()}`;
+    document.getElementById('health').textContent = `Conexion activa con backend y base de datos. Hora DB: ${new Date(data.databaseTime).toLocaleString()}`;
   } catch (error) {
     document.getElementById('health').textContent = 'No se pudo conectar con el backend.';
   }
@@ -47,19 +62,19 @@ const fillSelect = (id, rows, valueKey, textKey) => {
 const loadCategories = async () => {
   const categories = await request('/categories');
   fillSelect('productCategory', categories, 'id_categoria', 'nombre');
-  renderTable('categoriesTable', categories, row => `
+  renderTable('categoriesTable', categories, hasPermission('inventory:write') ? row => `
     <button class="button secondary" onclick='editCategory(${JSON.stringify(row)})'>Editar</button>
     <button class="button danger" onclick='deleteCategory(${row.id_categoria})'>Eliminar</button>
-  `);
+  ` : null);
 };
 
 const loadProducts = async () => {
   const products = await request('/products');
   fillSelect('saleProduct', products, 'id_producto', 'nombre');
-  renderTable('productsTable', products, row => `
+  renderTable('productsTable', products, hasPermission('inventory:write') ? row => `
     <button class="button secondary" onclick='editProduct(${JSON.stringify(row)})'>Editar</button>
     <button class="button danger" onclick='deleteProduct(${row.id_producto})'>Eliminar</button>
-  `);
+  ` : null);
 };
 
 const loadCatalogs = async () => {
@@ -105,6 +120,30 @@ window.deleteProduct = async (id) => {
     alert(error.message);
   }
 };
+
+document.getElementById('loginForm').addEventListener('submit', async (event) => {
+  event.preventDefault();
+  try {
+    currentUser = await request('/auth/login', {
+      method: 'POST',
+      body: JSON.stringify({
+        usuario: document.getElementById('loginUser').value,
+        password: document.getElementById('loginPassword').value,
+      }),
+    });
+    document.getElementById('loginError').textContent = '';
+    await initApp();
+  } catch (error) {
+    document.getElementById('loginError').textContent = error.message;
+  }
+});
+
+document.getElementById('logoutButton').addEventListener('click', async () => {
+  await request('/auth/logout', { method: 'POST' });
+  currentUser = null;
+  document.getElementById('appShell').hidden = true;
+  document.getElementById('loginView').hidden = false;
+});
 
 document.getElementById('categoryForm').addEventListener('submit', async (event) => {
   event.preventDefault();
@@ -188,11 +227,29 @@ document.querySelectorAll('[data-report]').forEach(button => {
   });
 });
 
-const init = async () => {
+const initApp = async () => {
+  document.getElementById('loginView').hidden = true;
+  document.getElementById('appShell').hidden = false;
+  applyRoleUi();
   await loadHealth();
   await loadCatalogs();
   await loadCategories();
   await loadProducts();
 };
 
-init().catch(error => alert(error.message));
+const init = async () => {
+  const { user } = await request('/auth/me');
+  currentUser = user;
+  if (!currentUser) {
+    document.getElementById('loginView').hidden = false;
+    document.getElementById('appShell').hidden = true;
+    return;
+  }
+  await initApp();
+};
+
+init().catch(error => {
+  document.getElementById('loginView').hidden = false;
+  document.getElementById('appShell').hidden = true;
+  document.getElementById('loginError').textContent = error.message;
+});

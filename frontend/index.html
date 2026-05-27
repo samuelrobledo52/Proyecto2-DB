@@ -3,18 +3,45 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Proyecto 2 - Sistema de Inventario y Ventas</title>
+  <title>Proyecto 3 - Seguridad, ORM y Stored Procedures</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 
 <body>
-  <div class="app-shell">
+  <section id="loginView" class="login-view" hidden>
+    <form id="loginForm" class="login-card">
+      <p class="eyebrow">CC3088 · Proyecto 3</p>
+      <h1>Ingreso al sistema</h1>
+      <p>Use un usuario de prueba para validar las vistas protegidas por rol.</p>
+
+      <label>
+        Usuario
+        <select id="loginUser" required>
+          <option value="admin">admin</option>
+          <option value="inventario">inventario</option>
+          <option value="ventas">ventas</option>
+          <option value="reportes">reportes</option>
+          <option value="auditor">auditor</option>
+        </select>
+      </label>
+
+      <label>
+        Password
+        <input id="loginPassword" type="password" value="secret" required />
+      </label>
+
+      <button class="button" type="submit">Iniciar sesion</button>
+      <p id="loginError" class="error-text"></p>
+    </form>
+  </section>
+
+  <div id="appShell" class="app-shell" hidden>
     <aside class="sidebar">
       <div class="brand">
         <div class="brand-icon">DB</div>
         <div>
-          <strong>Proyecto 2</strong>
-          <span>Bases de Datos 1</span>
+          <strong>Proyecto 3</strong>
+          <span>Roles + ORM + SP</span>
         </div>
       </div>
 
@@ -27,58 +54,61 @@
       </nav>
 
       <div class="sidebar-note">
-        <span>Docker activo</span>
-        <p>Frontend, backend y PostgreSQL integrados con SQL explícito.</p>
+        <span id="activeUser">Sin sesion</span>
+        <p>Sesion activa con permisos aplicados por rol.</p>
       </div>
     </aside>
 
     <div class="content">
       <header class="hero">
         <div>
-          <p class="eyebrow">CC3088 · Proyecto 2</p>
-          <h1>Sistema de Inventario y Ventas</h1>
+          <p class="eyebrow">CC3088 · Proyecto 3</p>
+          <h1>Sistema Seguro de Inventario y Ventas</h1>
           <p>
-            Plataforma web para administrar productos, categorías, ventas y reportes de una tienda.
-            Implementa frontend, backend, PostgreSQL, consultas SQL explícitas y despliegue con Docker.
+            Plataforma web con autenticacion por sesion, cinco roles reales en PostgreSQL,
+            stored procedures invocados desde el backend y CRUD mediante ORM.
           </p>
         </div>
 
-        <a class="button secondary" href="http://localhost:3000/api/reports/export.csv">
-          Exportar reporte CSV
-        </a>
+        <div class="hero-actions">
+          <a class="button secondary" data-permission="reports:read" href="http://localhost:3000/api/reports/export.csv">
+            Exportar reporte CSV
+          </a>
+          <button id="logoutButton" class="button ghost" type="button">Cerrar sesion</button>
+        </div>
       </header>
 
       <main>
         <section class="summary-grid">
           <article class="summary-card">
             <span>01</span>
-            <h3>Base de datos</h3>
-            <p>Tablas relacionales, llaves primarias, llaves foráneas, índices y vista SQL.</p>
+            <h3>Roles DBMS</h3>
+            <p>Cinco roles con permisos granulares mediante GRANT y REVOKE.</p>
           </article>
 
           <article class="summary-card">
             <span>02</span>
             <h3>Inventario</h3>
-            <p>CRUD completo para categorías y productos</p>
+            <p>CRUD protegido para categorias y productos usando Sequelize.</p>
           </article>
 
           <article class="summary-card">
             <span>03</span>
             <h3>Ventas</h3>
-            <p>Registro transaccional de ventas y actualización  de stock.</p>
+            <p>Registro de ventas por stored procedure con COMMIT y ROLLBACK.</p>
           </article>
 
           <article class="summary-card">
             <span>04</span>
-            <h3>Reportes SQL</h3>
-            <p>Consultas visibles usando JOIN, subqueries, GROUP BY, HAVING, CTE y VIEW.</p>
+            <h3>Sesiones</h3>
+            <p>Login y logout con un usuario de prueba por cada rol.</p>
           </article>
         </section>
 
         <section id="estado" class="card status-card">
           <div class="section-title">
             <div>
-              <p class="section-kicker">Verificación</p>
+              <p class="section-kicker">Verificacion</p>
               <h2>Estado del sistema</h2>
             </div>
             <span class="badge success-badge"></span>
@@ -87,17 +117,17 @@
           <p id="health"></p>
         </section>
 
-        <section id="inventario" class="grid two">
+        <section id="inventario" class="grid two" data-permission="catalog:read">
           <div class="card">
             <div class="section-title">
               <div>
-                <p class="section-kicker">Administración</p>
-                <h2>Categorías</h2>
+                <p class="section-kicker">Administracion</p>
+                <h2>Categorias</h2>
               </div>
               <span class="badge">Entidad 1</span>
             </div>
 
-            <form id="categoryForm">
+            <form id="categoryForm" data-permission="inventory:write">
               <input type="hidden" id="categoryId" />
 
               <label>
@@ -106,12 +136,12 @@
               </label>
 
               <label>
-                Descripción
-                <input id="categoryDescription" placeholder="Ej. Productos líquidos para consumo diario" required />
+                Descripcion
+                <input id="categoryDescription" placeholder="Ej. Productos liquidos para consumo diario" required />
               </label>
 
               <div class="form-actions">
-                <button class="button" type="submit">Guardar </button>
+                <button class="button" type="submit">Guardar</button>
                 <button class="button ghost" type="button" id="clearCategory">Limpiar</button>
               </div>
             </form>
@@ -124,13 +154,13 @@
           <div class="card">
             <div class="section-title">
               <div>
-                <p class="section-kicker">Administración</p>
+                <p class="section-kicker">Administracion</p>
                 <h2>Productos</h2>
               </div>
               <span class="badge">Entidad 2</span>
             </div>
 
-            <form id="productForm">
+            <form id="productForm" data-permission="inventory:write">
               <input type="hidden" id="productId" />
 
               <label>
@@ -152,7 +182,7 @@
 
               <div class="form-grid">
                 <label>
-                  Categoría
+                  Categoria
                   <select id="productCategory" required></select>
                 </label>
 
@@ -163,7 +193,7 @@
               </div>
 
               <div class="form-actions">
-                <button class="button" type="submit">Guardar </button>
+                <button class="button" type="submit">Guardar</button>
                 <button class="button ghost" type="button" id="clearProduct">Limpiar</button>
               </div>
             </form>
@@ -174,18 +204,18 @@
           </div>
         </section>
 
-        <section id="ventas" class="card">
+        <section id="ventas" class="card" data-permission="sales:write">
           <div class="section-title">
             <div>
-              <p class="section-kicker">Operación de tienda</p>
-              <h2>Registrar venta </h2>
+              <p class="section-kicker">Operacion de tienda</p>
+              <h2>Registrar venta</h2>
             </div>
-            <span class="badge">BEGIN · COMMIT · ROLLBACK</span>
+            <span class="badge">Stored procedure</span>
           </div>
 
           <p class="hint">
-            El backend ejecuta una transacción explícita. Si la venta se completa, confirma los cambios;
-            si no hay stock suficiente o ocurre un error, cancela la operación con ROLLBACK.
+            El backend invoca un procedimiento almacenado que bloquea stock, calcula el total,
+            registra el detalle y usa COMMIT o ROLLBACK segun corresponda.
           </p>
 
           <form id="saleForm" class="sale-form">
@@ -215,17 +245,17 @@
           <p id="saleMessage"></p>
         </section>
 
-        <section id="reportes" class="card">
+        <section id="reportes" class="card" data-permission="reports:read">
           <div class="section-title">
             <div>
               <p class="section-kicker">Evidencia SQL</p>
-              <h2>Reportes SQL </h2>
+              <h2>Reportes SQL</h2>
             </div>
-            <span class="badge">Consultas </span>
+            <span class="badge">Funciones y vista</span>
           </div>
 
           <p class="hint">
-            Cada botón ejecuta una consulta SQL desde el backend y muestra el resultado directamente en la interfaz.
+            Cada boton consulta el backend autenticado y muestra resultados de JOIN, subqueries, GROUP BY, HAVING, CTE y VIEW.
           </p>
 
           <div class="report-buttons">
@@ -243,7 +273,7 @@
       </main>
 
       <footer>
-        <p>Proyecto 2 - Sistema de tienda. </p>
+        <p>Proyecto 3 - Sistema de tienda seguro.</p>
       </footer>
     </div>
   </div>

@@ -1,7 +1,7 @@
 {
-  "name": "tienda-proyecto2-backend",
+  "name": "tienda-proyecto3-backend",
   "version": "1.0.0",
-  "description": "Backend Proyecto 2 Bases de Datos 1",
+  "description": "Backend Proyecto 3 Bases de Datos 1",
   "main": "src/server.js",
   "type": "module",
   "scripts": {
@@ -11,7 +11,9 @@
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
+    "express-session": "^1.18.1",
     "express": "^4.21.2",
-    "pg": "^8.13.1"
+    "pg": "^8.13.1",
+    "sequelize": "^6.37.5"
   }
 }

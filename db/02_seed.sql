@@ -1,4 +1,10 @@
 -- Datos de prueba realistas: al menos 25 registros por tabla
+INSERT INTO app_usuario(usuario, password, rol, nombre) VALUES ('admin', 'secret', 'admin', 'Administrador general');
+INSERT INTO app_usuario(usuario, password, rol, nombre) VALUES ('inventario', 'secret', 'inventario', 'Encargado de inventario');
+INSERT INTO app_usuario(usuario, password, rol, nombre) VALUES ('ventas', 'secret', 'ventas', 'Cajero de ventas');
+INSERT INTO app_usuario(usuario, password, rol, nombre) VALUES ('reportes', 'secret', 'reportes', 'Analista de reportes');
+INSERT INTO app_usuario(usuario, password, rol, nombre) VALUES ('auditor', 'secret', 'auditor', 'Auditor de tienda');
+
 INSERT INTO categoria(nombre, descripcion) VALUES ('Bebidas', 'Productos líquidos para consumo diario');
 INSERT INTO categoria(nombre, descripcion) VALUES ('Snacks', 'Botanas y alimentos ligeros');
 INSERT INTO categoria(nombre, descripcion) VALUES ('Lácteos', 'Leche, yogures y derivados');
